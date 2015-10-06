@@ -5,23 +5,55 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+
+/// <summary>
+/// 
+/// </summary>
 namespace SimChatServer
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class Server
     {
+
+        /// <summary>
+        /// The done
+        /// </summary>
         private ManualResetEvent Done = new ManualResetEvent(false);
 
+
+        /// <summary>
+        /// The end point
+        /// </summary>
         private IPEndPoint EndPoint = new IPEndPoint(IPAddress.Loopback, 10000);
 
+
+        /// <summary>
+        /// The listener
+        /// </summary>
         private Socket Listener;
 
+
+        /// <summary>
+        /// The clients
+        /// </summary>
         private List<Connection> Clients = new List<Connection>(100);
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Server"/> class.
+        /// </summary>
         public Server()
         {
             
         }
 
+
+        /// <summary>
+        /// Listens this instance.
+        /// </summary>
         public void Listen()
         {
             Listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -49,6 +81,11 @@ namespace SimChatServer
             }
         }
 
+
+        /// <summary>
+        /// Accepts the callback.
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         private void AcceptCallback(IAsyncResult ar)
         {
             Done.Set();
@@ -64,6 +101,11 @@ namespace SimChatServer
             handler.BeginReceive(conn.Buffer, 0, conn.Buffer.Length, 0, ReadCallback, conn);
         }
 
+
+        /// <summary>
+        /// Reads the callback.
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         private void ReadCallback(IAsyncResult ar)
         {
             Connection conn = (Connection) ar.AsyncState;
@@ -77,13 +119,20 @@ namespace SimChatServer
                     client.WorkSocket.BeginSend(conn.Buffer, 0, bytesRead, 0, SendCallback, client);
                 }
             }
+
+            conn.WorkSocket.BeginReceive(conn.Buffer, 0, conn.Buffer.Length, 0, ReadCallback, conn);
         }
 
+
+        /// <summary>
+        /// Sends the callback.
+        /// </summary>
+        /// <param name="ar">The ar.</param>
         private void SendCallback(IAsyncResult ar)
         {
             Connection conn = (Connection) ar.AsyncState;
 
-            conn.WorkSocket.EndSend(ar);
+            int bytesWritten = conn.WorkSocket.EndSend(ar);
         }
     }
 }
