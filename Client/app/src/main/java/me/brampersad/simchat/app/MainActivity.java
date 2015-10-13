@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
         private ListView m_MessagesList;
         private ArrayList<String> m_Messages;
         private ArrayAdapter<String> m_MessagesAdapter;
-        private final String m_IP = "173.64.89.108";
+        private final String m_IP = "192.168.1.1";
         private final int m_Port = 10000;
 
         public PlaceholderFragment() {
